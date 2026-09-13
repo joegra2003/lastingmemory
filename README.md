@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lasting Memory
+
+> Preserve who you are, not just what you made.
+
+An agentic life vault — an AI-guided platform that captures your stories, values, and wisdom, and shares them with the people you love.
+
+## Tech Stack
+
+- **Next.js 16** (App Router, TypeScript)
+- **Tailwind CSS**
+- **Supabase** (email signups)
+- **Vercel** (deployment)
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment Variables
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Copy `.env.example` to `.env.local` and fill in the values:
 
-## Learn More
+```bash
+cp .env.example .env.local
+```
 
-To learn more about Next.js, take a look at the following resources:
+Required variables:
+- `NEXT_PUBLIC_SUPABASE_URL` — your Supabase project URL
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — Supabase publishable key
+- `SUPABASE_SERVICE_ROLE_KEY` — Supabase service role key (server-side only)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Database Setup (One-Time)
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Run this SQL in the [Supabase SQL editor](https://supabase.com/dashboard/project/fwbadufcmwbqlesqgrzc/sql/new):
 
-## Deploy on Vercel
+```sql
+-- See supabase/migrations/001_email_signups.sql
+CREATE TABLE IF NOT EXISTS public.lastingmemory_signups (
+  id          bigserial    PRIMARY KEY,
+  email       text         NOT NULL UNIQUE,
+  signed_up_at timestamptz NOT NULL DEFAULT now(),
+  source      text         DEFAULT 'landing_v1',
+  created_at  timestamptz  NOT NULL DEFAULT now()
+);
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+ALTER TABLE public.lastingmemory_signups ENABLE ROW LEVEL SECURITY;
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Deployment
+
+Deployed on Vercel. Push to `main` to deploy.
+
+Set the environment variables in Vercel project settings (they're already in `.env.local` — just add them to the Vercel dashboard).
